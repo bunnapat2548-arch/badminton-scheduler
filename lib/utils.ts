@@ -2,8 +2,11 @@ import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import dayjs from 'dayjs'
 import 'dayjs/locale/th'
+import buddhistEra from 'dayjs/plugin/buddhistEra'
 import { CLOSE_HOUR, OPEN_HOUR, SLOT_WIDTH, TOTAL_SLOTS } from './constants'
 import type { Booking } from '@/types'
+
+dayjs.extend(buddhistEra)
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

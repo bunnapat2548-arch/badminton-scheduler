@@ -24,6 +24,7 @@ import {
   isSlotInDragRange,
   slotToTime,
 } from '@/lib/utils'
+
 import type { Booking } from '@/types'
 
 interface SchedulerGridProps {
@@ -37,8 +38,6 @@ export function SchedulerGrid({ containerRef }: SchedulerGridProps) {
   useRealtimeBookings(selectedDate)
 
   const isToday = selectedDate === dayjs().format('YYYY-MM-DD')
-  const currentTimeLeft = isToday ? getCurrentTimeLeft() : null
-  const timeIndicatorRef = useRef<HTMLDivElement | null>(null)
 
   // Refs updated synchronously so event handlers always have latest values
   const dragStateRef = useRef(dragState)
@@ -51,30 +50,14 @@ export function SchedulerGrid({ containerRef }: SchedulerGridProps) {
   resetDragStateRef.current = resetDragState
   selectedDateRef.current = selectedDate
 
-  // Animate current time indicator every minute
-  useEffect(() => {
-    if (!isToday) return
-    const update = () => {
-      const left = getCurrentTimeLeft()
-      if (timeIndicatorRef.current) {
-        if (left !== null) {
-          timeIndicatorRef.current.style.display = 'block'
-          timeIndicatorRef.current.style.left = `${left}px`
-        } else {
-          timeIndicatorRef.current.style.display = 'none'
-        }
-      }
-    }
-    update()
-    const id = setInterval(update, 60_000)
-    return () => clearInterval(id)
-  }, [isToday])
-
   // Scroll to current time on load
   useEffect(() => {
-    if (isToday && containerRef.current && currentTimeLeft !== null) {
-      const scrollX = Math.max(0, SIDEBAR_WIDTH + currentTimeLeft - containerRef.current.clientWidth / 2)
-      containerRef.current.scrollLeft = scrollX
+    if (isToday && containerRef.current) {
+      const left = getCurrentTimeLeft()
+      if (left !== null) {
+        const scrollX = Math.max(0, SIDEBAR_WIDTH + left - containerRef.current.clientWidth / 2)
+        containerRef.current.scrollLeft = scrollX
+      }
     }
   }, [isToday, containerRef]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -188,19 +171,6 @@ export function SchedulerGrid({ containerRef }: SchedulerGridProps) {
 
           {/* Court rows */}
           <div className="relative">
-            {/* Current time indicator spans all rows */}
-            {isToday && currentTimeLeft !== null && (
-              <div
-                ref={timeIndicatorRef}
-                className="absolute top-0 bottom-0 pointer-events-none z-20"
-                style={{ left: currentTimeLeft }}
-              >
-                <div className="relative h-full">
-                  <div className="absolute top-0 left-0 w-0.5 h-full bg-red-500 opacity-80" />
-                  <div className="absolute -top-1 -left-1 w-2.5 h-2.5 rounded-full bg-red-500" />
-                </div>
-              </div>
-            )}
 
             {COURTS.map((court, courtIndex) => {
               const courtBookings = bookingsByCourt(court.number)

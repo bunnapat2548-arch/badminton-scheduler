@@ -86,10 +86,15 @@ export function DateNavigation({ schedulerRef }: DateNavigationProps) {
       const dataUrl = await processImage(fullDataUrl, pixelRatio, startHour, 1)
 
       const suffix = startHour === OPEN_HOUR ? '' : `-${startHour}00`
-      const link = document.createElement('a')
-      link.download = `schedule-${selectedDate}${suffix}.png`
-      link.href = dataUrl
-      link.click()
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      if (isIOS) {
+        window.open(dataUrl, '_blank')
+      } else {
+        const link = document.createElement('a')
+        link.download = `schedule-${selectedDate}${suffix}.png`
+        link.href = dataUrl
+        link.click()
+      }
       toast.success('บันทึกรูปภาพสำเร็จ')
     } catch {
       toast.error('ไม่สามารถบันทึกรูปภาพได้')

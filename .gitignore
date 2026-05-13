@@ -1,0 +1,17 @@
+# dependencies
+/node_modules
+
+# Next.js
+/.next/
+/out/
+
+# env files (never commit these - contains secret keys)
+.env
+.env.local
+.env*.local
+
+# misc
+.DS_Store
+*.pem
+/coverage
+/.vercel

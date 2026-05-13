@@ -86,12 +86,17 @@ export function DateNavigation({ schedulerRef }: DateNavigationProps) {
       const dataUrl = await processImage(fullDataUrl, pixelRatio, startHour, 1)
 
       const suffix = startHour === OPEN_HOUR ? '' : `-${startHour}00`
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-      if (isIOS) {
-        window.open(dataUrl, '_blank')
+      const fileName = `schedule-${selectedDate}${suffix}.png`
+
+      const res = await fetch(dataUrl)
+      const blob = await res.blob()
+      const file = new File([blob], fileName, { type: 'image/png' })
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: fileName })
       } else {
         const link = document.createElement('a')
-        link.download = `schedule-${selectedDate}${suffix}.png`
+        link.download = fileName
         link.href = dataUrl
         link.click()
       }

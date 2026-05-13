@@ -68,7 +68,8 @@ export function BookingModal() {
     reset,
     setValue,
     watch,
-    formState: { errors, isSubmitting },
+    setError,
+    formState: { errors },
   } = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
